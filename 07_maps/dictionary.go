@@ -24,13 +24,10 @@ func (d Dictionary) Add(w, definition string) error {
 
 func (d Dictionary) Update(w, definition string) error {
 	_, err := d.Search(w)
-	switch err {
-	case nil:
+	if err == nil {
 		d[w] = definition
-		return nil
-	default:
-		return err
 	}
+	return err
 }
 
 func (d Dictionary) Search(s string) (string, error) {
