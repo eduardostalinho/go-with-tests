@@ -38,6 +38,14 @@ func (d Dictionary) Search(s string) (string, error) {
 	return definition, nil
 }
 
+func (d Dictionary) Delete(w string) error {
+	_, err := d.Search(w)
+	if err == nil {
+		delete(d, w)
+	}
+	return err
+}
+
 func (err DictionaryErr) Error() string {
 	return string(err)
 }
