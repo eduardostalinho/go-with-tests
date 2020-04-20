@@ -14,6 +14,9 @@ func TestRacer(t *testing.T) {
 	fastURL := fastServer.URL
 	slowURL := slowServer.URL
 
+	defer slowServer.Close()
+	defer fastServer.Close()
+
 	got := Racer(fastURL, slowURL)
 	want := fastURL
 
