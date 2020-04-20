@@ -2,14 +2,25 @@ package racer
 
 import (
 	"net/http"
+	"time"
 )
 
-func Racer(a, b string) string {
+const ErrTimeoutErr = RacerError("Timed out waiting for response")
+
+type RacerError string
+
+func (e RacerError) Error() string {
+	return string(e)
+}
+
+func Racer(a, b string) (string, error) {
 	select {
 	case <-ping(a):
-		return a
+		return a, nil
 	case <-ping(b):
-		return b
+		return b, nil
+	case <-time.After(10 * time.Second):
+		return "", ErrTimeoutErr
 	}
 }
 
