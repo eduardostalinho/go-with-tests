@@ -16,9 +16,9 @@ func TestPerimeter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
-	areaTests := []struct{
+	areaTests := []struct {
 		shape Shape
-		want float64
+		want  float64
 	}{
 		{Rectangle{20, 20}, 400},
 		{Circle{10}, 314.1592653589793},
