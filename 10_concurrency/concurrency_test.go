@@ -32,7 +32,6 @@ func TestCheckWebsites(t *testing.T) {
 	}
 }
 
-
 func slowWebsiteChecker(_ string) bool {
 	time.Sleep(20 * time.Millisecond)
 	return true

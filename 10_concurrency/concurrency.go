@@ -1,4 +1,5 @@
 package concurrency
+
 type result struct {
 	string
 	bool
@@ -20,8 +21,6 @@ func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
 		result := <-resultChan
 		results[result.string] = result.bool
 	}
-
-	return results
 
 	return results
 }
