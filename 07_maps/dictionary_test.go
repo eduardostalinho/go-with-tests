@@ -4,13 +4,12 @@ import "testing"
 
 func TestSearch(t *testing.T) {
 	t.Run("known word", func(t *testing.T) {
-		dictionary := Dictionary{"test": "this is a test"}
+		word := "test"
+		definition := "this is a test"
+		dictionary := Dictionary{word: definition}
 
-		got, err := dictionary.Search("test")
-		want := "this is a test"
+		assertDefinition(t, dictionary, word, definition)
 
-		assertStrings(t, got, want)
-		assertNoError(t, err)
 	})
 
 	t.Run("unknown word", func(t *testing.T) {
@@ -24,14 +23,12 @@ func TestSearch(t *testing.T) {
 func TestAdd(t *testing.T) {
 	t.Run("Add unexisting word", func(t *testing.T) {
 		dictionary := Dictionary{"test": "this is a test"}
+		word := "testa"
+		definition := "questa una testa"
 
-		dictionary.Add("testa", "questa una testa")
+		dictionary.Add(word, definition)
 
-		got, err := dictionary.Search("testa")
-		want := "questa una testa"
-
-		assertNoError(t, err)
-		assertStrings(t, got, want)
+		assertDefinition(t, dictionary, word, definition)
 	})
 }
 
@@ -62,4 +59,12 @@ func assertNoError(t *testing.T, err error) {
 	if err != nil {
 		t.Errorf("unexpected error %q", err)
 	}
+}
+
+func assertDefinition(t *testing.T, d Dictionary, w, definition string) {
+	t.Helper()
+	got, err := d.Search(w)
+
+	assertNoError(t, err)
+	assertStrings(t, got, definition)
 }
