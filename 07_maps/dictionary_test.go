@@ -21,6 +21,20 @@ func TestSearch(t *testing.T) {
 	})
 }
 
+func TestAdd(t *testing.T) {
+	t.Run("Add unexisting word", func(t *testing.T) {
+		dictionary := Dictionary{"test": "this is a test"}
+
+		dictionary.Add("testa", "questa una testa")
+
+		got, err := dictionary.Search("testa")
+		want := "questa una testa"
+
+		assertNoError(t, err)
+		assertStrings(t, got, want)
+	})
+}
+
 func assertStrings(t *testing.T, got string, want string) {
 	t.Helper()
 
