@@ -27,8 +27,8 @@ func TestRacer(t *testing.T) {
 		}
 	})
 	t.Run("raiser error if server dont respond in 10 seconds", func(t *testing.T) {
-		slowServer := makeDelayedServer(11 * time.Second)
-		fastServer := makeDelayedServer(12 * time.Second)
+		slowServer := makeDelayedServer(2 * time.Millisecond)
+		fastServer := makeDelayedServer(3 * time.Millisecond)
 
 		fastURL := fastServer.URL
 		slowURL := slowServer.URL
@@ -36,7 +36,7 @@ func TestRacer(t *testing.T) {
 		defer slowServer.Close()
 		defer fastServer.Close()
 
-		_, err := Racer(fastURL, slowURL)
+		_, err := ConfigurableRacer(fastURL, slowURL, 1*time.Millisecond)
 
 		if err != ErrTimeoutErr {
 			t.Errorf("error mismatch, got %q", err)
