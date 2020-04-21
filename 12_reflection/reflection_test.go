@@ -33,6 +33,18 @@ func TestWalk(t *testing.T) {
 			}{"Eduardo", 22},
 			[]string{"Eduardo"},
 		},
+		{
+			"Struct with nested struct",
+			struct {
+				name    string
+				Profile struct {
+					nickname string
+				}
+			}{"Eduardo", struct {
+				nickname string
+			}{"stalinho"}},
+			[]string{"Eduardo", "stalinho"},
+		},
 	}
 	for _, test := range cases {
 		t.Run(test.Name, func(t *testing.T) {
