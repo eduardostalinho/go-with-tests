@@ -5,6 +5,15 @@ import (
 	"testing"
 )
 
+type profile struct {
+	nickname string
+}
+
+type nestedStruct struct {
+	name    string
+	Profile profile
+}
+
 func TestWalk(t *testing.T) {
 	cases := []struct {
 		Name          string
@@ -35,14 +44,7 @@ func TestWalk(t *testing.T) {
 		},
 		{
 			"Struct with nested struct",
-			struct {
-				name    string
-				Profile struct {
-					nickname string
-				}
-			}{"Eduardo", struct {
-				nickname string
-			}{"stalinho"}},
+			nestedStruct{"Eduardo", profile{"stalinho"}},
 			[]string{"Eduardo", "stalinho"},
 		},
 	}
