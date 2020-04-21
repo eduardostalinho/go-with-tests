@@ -52,6 +52,11 @@ func TestWalk(t *testing.T) {
 			&nestedStruct{"Eduardo", profile{"stalinho"}},
 			[]string{"Eduardo", "stalinho"},
 		},
+		{
+			"Handle slices",
+			[]profile{{"stalinho"}, {"dudu"}},
+			[]string{"stalinho", "dudu"},
+		},
 	}
 	for _, test := range cases {
 		t.Run(test.Name, func(t *testing.T) {
