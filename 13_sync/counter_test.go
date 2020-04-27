@@ -7,7 +7,7 @@ import (
 
 func TestCounter(t *testing.T) {
 	t.Run("3 Inc calls make value 3", func(t *testing.T) {
-		counter := Counter{}
+		counter := NewCounter()
 		counter.Inc()
 		counter.Inc()
 		counter.Inc()
@@ -15,7 +15,7 @@ func TestCounter(t *testing.T) {
 		assertCounter(t, counter, 3)
 	})
 	t.Run("Increment asynchronously 1000 times", func(t *testing.T) {
-		counter := Counter{}
+		counter := NewCounter()
 		wantedCount := 1000
 		var wg sync.WaitGroup
 		wg.Add(wantedCount)
@@ -32,7 +32,7 @@ func TestCounter(t *testing.T) {
 	})
 }
 
-func assertCounter(t *testing.T, counter Counter, value int) {
+func assertCounter(t *testing.T, counter *Counter, value int) {
 	t.Helper()
 	if counter.Value() != value {
 		t.Errorf("got %d, wanted %d", counter.Value(), value)
