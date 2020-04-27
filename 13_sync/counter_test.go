@@ -3,13 +3,19 @@ package counter
 import "testing"
 
 func TestCounter(t *testing.T) {
-	counter := Counter{}
-	counter.Inc()
-	counter.Inc()
-	counter.Inc()
+	t.Run("3 Inc calls make value 3", func(t *testing.T) {
+		counter := Counter{}
+		counter.Inc()
+		counter.Inc()
+		counter.Inc()
 
-	if counter.Value() != 3 {
-		t.Errorf("got %d, wanted 3", counter.Value())
+		assertCounter(t, counter, 3)
+	})
+}
+
+func assertCounter(t *testing.T, counter Counter, value int) {
+	t.Helper()
+	if counter.Value() != value {
+		t.Errorf("got %d, wanted %d", counter.Value(), value)
 	}
-
 }
