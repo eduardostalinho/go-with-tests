@@ -9,7 +9,18 @@ type RomanNumeral struct {
 	Symbol string
 }
 
-var allRomanNumerals = []RomanNumeral{
+type RomanNumerals []RomanNumeral
+
+func (r RomanNumerals) ValueOf(s string) int {
+	for _, sym := range r {
+		if sym.Symbol == s {
+			return sym.Value
+		}
+	}
+	return 0
+}
+
+var allRomanNumerals = RomanNumerals{
 	{1000, "M"},
 	{900, "CM"},
 	{500, "D"},
