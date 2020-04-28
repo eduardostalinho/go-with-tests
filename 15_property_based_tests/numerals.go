@@ -36,25 +36,25 @@ var allRomanNumerals = RomanNumerals{
 	{1, "I"},
 }
 
-func ConvertToRomans(arabic int) string {
+func ConvertToRoman(arabic uint16) string {
 	var result strings.Builder
 	for _, numeral := range allRomanNumerals {
-		for arabic >= numeral.Value {
+		for arabic >= uint16(numeral.Value) {
 			result.WriteString(numeral.Symbol)
-			arabic -= numeral.Value
+			arabic -= uint16(numeral.Value)
 		}
 	}
 	return result.String()
 }
 
-func ConvertToArabic(roman string) int {
+func ConvertToArabic(roman string) uint16 {
 	var result int
 	for i, r := range roman {
 		value := allRomanNumerals.ValueOf(string(r))
 		multiplier := getValueMultiplier(i, value, roman)
-		result = result + (value * multiplier)
+		result += value * multiplier
 	}
-	return result
+	return uint16(result)
 }
 
 func getValueMultiplier(i, value int, roman string) int {
@@ -67,5 +67,4 @@ func getValueMultiplier(i, value int, roman string) int {
 		}
 	}
 	return multiplier
-
 }

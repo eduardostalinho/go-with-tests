@@ -3,11 +3,12 @@ package numerals
 import (
 	"fmt"
 	"testing"
+	"testing/quick"
 )
 
 func TestConverToRomans(t *testing.T) {
 	cases := []struct {
-		Arabic int
+		Arabic uint16
 		Roman  string
 	}{
 		{1, "I"},
@@ -25,7 +26,7 @@ func TestConverToRomans(t *testing.T) {
 	}
 	for _, test := range cases {
 		t.Run(fmt.Sprintf("convert %d to %s", test.Arabic, test.Roman), func(t *testing.T) {
-			got := ConvertToRomans(test.Arabic)
+			got := ConvertToRoman(test.Arabic)
 
 			if got != test.Roman {
 				t.Errorf("got %s, want %s", got, test.Roman)
@@ -38,5 +39,19 @@ func TestConverToRomans(t *testing.T) {
 				t.Errorf("got %d, want %d", got, test.Arabic)
 			}
 		})
+	}
+}
+
+func TestPropertiesOfConversion(t *testing.T) {
+	assertion := func(arabic uint16) bool {
+		t.Log("testing", arabic)
+		roman := ConvertToRoman(arabic)
+		fromRoman := ConvertToArabic(roman)
+		return fromRoman == arabic
+	}
+	if err := quick.Check(assertion, &quick.Config{
+		MaxCount: 10000,
+	}); err != nil {
+		t.Error("failed checks", err)
 	}
 }
