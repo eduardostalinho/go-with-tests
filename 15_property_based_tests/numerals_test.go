@@ -31,5 +31,12 @@ func TestConverToRomans(t *testing.T) {
 				t.Errorf("got %s, want %s", got, test.Roman)
 			}
 		})
+		t.Run(fmt.Sprintf("convert %s to %d", test.Roman, test.Arabic), func(t *testing.T) {
+			got := ConvertToArabic(test.Roman)
+
+			if got != test.Arabic {
+				t.Errorf("got %d, want %d", got, test.Arabic)
+			}
+		})
 	}
 }

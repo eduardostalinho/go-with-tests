@@ -46,3 +46,26 @@ func ConvertToRomans(arabic int) string {
 	}
 	return result.String()
 }
+
+func ConvertToArabic(roman string) int {
+	var result int
+	for i, r := range roman {
+		value := allRomanNumerals.ValueOf(string(r))
+		multiplier := getValueMultiplier(i, value, roman)
+		result = result + (value * multiplier)
+	}
+	return result
+}
+
+func getValueMultiplier(i, value int, roman string) int {
+	multiplier := 1
+	if i+1 < len(roman) {
+		next := roman[i+1]
+		if allRomanNumerals.ValueOf(string(next)) > value {
+			multiplier = -1
+
+		}
+	}
+	return multiplier
+
+}
