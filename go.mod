@@ -1,4 +1,4 @@
-module github.com/eduardostalinho/go_with_tests
+module github.com/eduardostalinho/go-with-tests
 
 go 1.14
 
