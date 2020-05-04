@@ -8,14 +8,16 @@ import (
 
 func SVGWriter(w io.Writer, t time.Time) {
 	sh := SecondHand(t)
+	mh := MinuteHand(t)
 
 	io.WriteString(w, svgStart)
 	io.WriteString(w, bezel)
-	io.WriteString(w, SecondHandTag(sh))
+	io.WriteString(w, HandLineTag(sh))
+	io.WriteString(w, HandLineTag(mh))
 	io.WriteString(w, svgEnd)
 }
 
-func SecondHandTag(p Point) string {
+func HandLineTag(p Point) string {
 	return fmt.Sprintf(`<line x1="150" y1="150" x2="%.f" y2="%.f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
