@@ -1,6 +1,7 @@
 package clockface
 
 import (
+	"time"
 	"bytes"
 	"encoding/xml"
 	"testing"
@@ -31,22 +32,34 @@ type Line struct {
 	Y2    float64 `xml:"y2,attr"`
 }
 
-func TestSVGWriterAtMidnight(t *testing.T) {
-	b := bytes.Buffer{}
-	tm := simpleTime(0, 0, 0)
+func TestSVGWriter(t *testing.T) {
+	cases := []struct {
+		time time.Time
+		line Line
+	}{
+		{simpleTime(0,0,0), Line{150, 150, 150, 60}},
+		{simpleTime(0,0,30), Line{150, 150, 150, 240}},
+	}
+	for _, c := range cases {
+		t.Run(testName(c.time), func (t *testing.T) {
+			b := bytes.Buffer{}
+			SVGWriter(&b, c.time)
 
-	SVGWriter(&b, tm)
+			svg := SVG{}
+			xml.Unmarshal(b.Bytes(), &svg)
 
-	svg := SVG{}
-	xml.Unmarshal(b.Bytes(), &svg)
+			if !containsLine(c.line, svg.Line) {
+				t.Errorf("expected %v in %v", c.line, svg.Line)
+			}
+		})
+	}
+}
 
-	x2 := 150.
-	y2 := 60.
-
-	for _, line := range svg.Line {
-		if line.X2 == x2 && line.Y2 == y2 {
-			return
+func containsLine(line Line, got []Line) bool {
+	for _, l := range got {
+		if line == l {
+			return true
 		}
 	}
-	t.Errorf("Expected line x2 %f at and y2 at %f, got SVG %s", x2, y2, b.String())
+	return false
 }
