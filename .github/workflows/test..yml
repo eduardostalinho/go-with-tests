@@ -1,0 +1,37 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+
+    - name: Test
+      run: |
+        VALIDDIRS=`find ./ -name "*.go" | grep -v main.go | awk '{ system("dirname " $1) }' | sort | uniq`
+        for valid in $VALIDDIRS; do
+          echo $valid
+          (go fmt $valid && go test -v $valid && echo 'ERRCHECK'  && errcheck -exclude errcheck_excludes.txt $valid && go vet $valid)
+        done
