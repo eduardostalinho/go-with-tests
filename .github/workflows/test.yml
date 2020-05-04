@@ -20,11 +20,9 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: go mod tidy
-
     - name: Test
       run: |
+        go get github.com/kisielk/errcheck
         VALIDDIRS=`find ./ -name "*.go" | grep -v main.go | awk '{ system("dirname " $1) }' | sort | uniq`
         for valid in $VALIDDIRS; do
           echo $valid
