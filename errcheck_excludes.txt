@@ -1,2 +1,4 @@
 fmt.Fprintf
 fmt.Fprintln
+io.WriteString
+encoding/xml.Unmarshal
