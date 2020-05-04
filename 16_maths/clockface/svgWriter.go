@@ -6,19 +6,47 @@ import (
 	"time"
 )
 
+const (
+	secondHandLength = 90
+	minuteHandLength = 70
+	hourHandLength   = 50
+	clockCenter      = 150
+)
+
+func makeHand(p Point, length float64) Point {
+	p = Point{p.X * length, p.Y * length}
+	p = Point{p.X, -p.Y}
+	p = Point{p.X + clockCenter, p.Y + clockCenter}
+	return p
+}
+
+func SecondHand(tm time.Time) Point {
+	return makeHand(secondHandPoint(tm), secondHandLength)
+}
+
+func MinuteHand(tm time.Time) Point {
+	return makeHand(minuteHandPoint(tm), minuteHandLength)
+}
+
+func HourHand(tm time.Time) Point {
+	return makeHand(hourHandPoint(tm), hourHandLength)
+}
+
 func SVGWriter(w io.Writer, t time.Time) {
 	sh := SecondHand(t)
 	mh := MinuteHand(t)
+	hh := HourHand(t)
 
 	io.WriteString(w, svgStart)
 	io.WriteString(w, bezel)
-	io.WriteString(w, HandLineTag(sh))
-	io.WriteString(w, HandLineTag(mh))
+	io.WriteString(w, HandLineTag(sh, "f00"))
+	io.WriteString(w, HandLineTag(mh, "000"))
+	io.WriteString(w, HandLineTag(hh, "000"))
 	io.WriteString(w, svgEnd)
 }
 
-func HandLineTag(p Point) string {
-	return fmt.Sprintf(`<line x1="150" y1="150" x2="%.f" y2="%.f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
+func HandLineTag(p Point, color string) string {
+	return fmt.Sprintf(`<line x1="150" y1="150" x2="%.2f" y2="%.2f" style="fill:none;stroke:#%s;stroke-width:3px;"/>`, p.X, p.Y, color)
 }
 
 const svgStart = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>

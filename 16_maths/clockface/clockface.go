@@ -5,32 +5,18 @@ import (
 	"time"
 )
 
+const (
+	halfClockSeconds = 30
+	clockSeconds     = halfClockSeconds * 2
+	halfClockMinutes = 30
+	clockMinutes     = halfClockMinutes * 2
+	halfClockHours   = 6
+	clockHours       = 12
+)
+
 type Point struct {
 	X float64
 	Y float64
-}
-
-const (
-	secondHandLength = 90
-	minuteHandLength = 70
-	clockCentreX     = 150
-	clockCentreY     = 150
-)
-
-func makeHand(p Point, length float64) Point {
-	p = Point{p.X * length, p.Y * length}
-	p = Point{p.X, -p.Y}
-	p = Point{p.X + clockCentreX, p.Y + clockCentreY}
-	return p
-
-}
-
-func SecondHand(tm time.Time) Point {
-	return makeHand(secondHandPoint(tm), secondHandLength)
-}
-
-func MinuteHand(tm time.Time) Point {
-	return makeHand(minuteHandPoint(tm), minuteHandLength)
 }
 
 func secondHandPoint(tm time.Time) Point {
@@ -43,13 +29,23 @@ func minuteHandPoint(tm time.Time) Point {
 	return angleToPoint(angle)
 }
 
+func hourHandPoint(tm time.Time) Point {
+	angle := hourInRadians(tm)
+	return angleToPoint(angle)
+}
+
 func secondInRadians(tm time.Time) float64 {
-	return math.Pi / (30 / float64(tm.Second()))
+	return math.Pi / (halfClockSeconds / float64(tm.Second()))
 }
 
 func minuteInRadians(tm time.Time) float64 {
-	return (secondInRadians(tm) / 60) +
-		(math.Pi / (30 / float64(tm.Minute())))
+	return (secondInRadians(tm) / clockMinutes) +
+		(math.Pi / (halfClockMinutes / float64(tm.Minute())))
+}
+
+func hourInRadians(tm time.Time) float64 {
+	return (minuteInRadians(tm) / clockHours) +
+		(math.Pi / (halfClockHours / float64(tm.Hour()%12)))
 }
 
 func angleToPoint(angle float64) Point {
