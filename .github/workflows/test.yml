@@ -7,7 +7,7 @@ on:
 jobs:
 
   build:
-    name: Build
+    name: Run checks in all directories.
     runs-on: ubuntu-latest
     steps:
 
