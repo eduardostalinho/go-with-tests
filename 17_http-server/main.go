@@ -5,12 +5,6 @@ import (
 	"net/http"
 )
 
-type InMemoryPlayerStore struct{}
-
-func (s *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return 123
-}
-
 func main() {
 	store := InMemoryPlayerStore{}
 	server := &PlayerServer{&store}
