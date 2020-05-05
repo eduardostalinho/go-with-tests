@@ -31,6 +31,7 @@ func TestGETPlayer(t *testing.T) {
 
 		want := "20"
 
+		assertResponseStatus(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), want)
 	})
 
@@ -42,7 +43,17 @@ func TestGETPlayer(t *testing.T) {
 
 		want := "10"
 
+		assertResponseStatus(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), want)
+
+	})
+
+	t.Run("return not found for unexistent user", func(t *testing.T) {
+		request := newGetScoreRequest("XPlayer")
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		assertResponseStatus(t, response.Code, http.StatusNotFound)
 
 	})
 }
@@ -54,6 +65,13 @@ func newGetScoreRequest(name string) *http.Request {
 }
 
 func assertResponseBody(t *testing.T, got, want string) {
+	t.Helper()
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func assertResponseStatus(t *testing.T, got, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
