@@ -84,14 +84,17 @@ func TestPOSTPlayerScoresWins(t *testing.T) {
 	})
 }
 
-func newPostScoreRequest(name string) *http.Request {
-	request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
+func newPlayerRequest(name, method string) *http.Request {
+	request, _ := http.NewRequest(method, fmt.Sprintf("/players/%s", name), nil)
 	return request
 }
 
+func newPostScoreRequest(name string) *http.Request {
+	return newPlayerRequest(name, http.MethodPost)
+}
+
 func newGetScoreRequest(name string) *http.Request {
-	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
-	return request
+	return newPlayerRequest(name, http.MethodGet)
 }
 
 func assertResponseBody(t *testing.T, got, want string) {
