@@ -5,12 +5,18 @@ type PlayerStore interface {
 	RecordWin(name string)
 }
 
-type InMemoryPlayerStore struct{}
+type InMemoryPlayerStore struct {
+	scores map[string]int
+}
+
+func NewInMemoryPlayerStore() *InMemoryPlayerStore {
+	return &InMemoryPlayerStore{map[string]int{}}
+}
 
 func (s *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return 123
+	return s.scores[name]
 }
 
 func (s *InMemoryPlayerStore) RecordWin(name string) {
-	return
+	s.scores[name]++
 }
