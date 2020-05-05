@@ -8,16 +8,20 @@ import (
 )
 
 type StubPlayerStore struct {
-	scores map[string]int
+	scores   map[string]int
+	winCalls []string
 }
 
 func (s *StubPlayerStore) GetPlayerScore(player string) int {
 	return s.scores[player]
+}
 
+func (s *StubPlayerStore) RecordWin(player string) {
+	s.winCalls = append(s.winCalls, player)
 }
 func TestGETPlayer(t *testing.T) {
 	store := StubPlayerStore{
-		map[string]int{
+		scores: map[string]int{
 			"Adam":  20,
 			"Alice": 10,
 		},
@@ -58,10 +62,36 @@ func TestGETPlayer(t *testing.T) {
 	})
 }
 
+func TestPOSTPlayerScoresWins(t *testing.T) {
+	store := StubPlayerStore{
+		scores: map[string]int{
+			"Adam":  20,
+			"Alice": 10,
+		},
+	}
+	server := &PlayerServer{&store}
+
+	t.Run("returns accepted", func(t *testing.T) {
+		request := newPostScoreRequest("TestPlayer")
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		assertResponseStatus(t, response.Code, http.StatusAccepted)
+		assertResponseBody(t, response.Body.String(), "")
+		if len(store.winCalls) != 1 {
+			t.Errorf("expected RecordWin to be called 1 time., called %d", len(store.winCalls))
+		}
+	})
+}
+
+func newPostScoreRequest(name string) *http.Request {
+	request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
+	return request
+}
+
 func newGetScoreRequest(name string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
 	return request
-
 }
 
 func assertResponseBody(t *testing.T, got, want string) {
