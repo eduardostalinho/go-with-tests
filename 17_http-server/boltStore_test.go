@@ -126,7 +126,7 @@ func TestBoltStoreGetLeague(t *testing.T) {
 		got := store.GetPlayerScore("NewPlayer")
 
 		if got != 0 {
-			t.Errorf("Expected value to be 1, got %d", got)
+			t.Errorf("Expected value to be 0, got %d", got)
 		}
 	})
 }
