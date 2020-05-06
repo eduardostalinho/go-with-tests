@@ -43,7 +43,6 @@ func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	leagueTable := s.GetLeagueTable()
 	w.Header().Set("content-type", "application/json")
 	json.NewEncoder(w).Encode(leagueTable)
-	w.WriteHeader(http.StatusOK)
 }
 
 func (s *PlayerServer) GetLeagueTable() []Player {
