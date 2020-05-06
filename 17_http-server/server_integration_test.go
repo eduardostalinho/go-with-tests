@@ -7,7 +7,12 @@ import (
 )
 
 func TestRecordWinsAndRetrieveScore(t *testing.T) {
-	store := NewBoltPlayerStore("scoresTest.bolt", "scoresTest")
+	dbPath := "testdb.bolt"
+	bucket := "scoresTest"
+	db := setupBolt(dbPath, bucket)
+	defer tearDownBolt(bucket, db)
+
+	store := NewBoltPlayerStore(dbPath, bucket)
 	server := &PlayerServer{store}
 	player := "Agnawd"
 	wins := 3
