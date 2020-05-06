@@ -22,9 +22,8 @@ jobs:
 
     - name: Test
       run: |
-        go get github.com/kisielk/errcheck
         VALIDDIRS=`find ./ -name "*.go" | grep -v main.go | awk '{ system("dirname " $1) }' | sort | uniq`
         for valid in $VALIDDIRS; do
           echo $valid
-          (go fmt $valid && go test -v $valid && echo 'ERRCHECK'  && errcheck -exclude errcheck_excludes.txt $valid && go vet $valid)
+          (go fmt $valid && go test -v $valid && go vet $valid)
         done
