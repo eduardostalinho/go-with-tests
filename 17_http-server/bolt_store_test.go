@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -84,6 +85,40 @@ func TestBoltStoreGetPlayerScore(t *testing.T) {
 
 		if got != 1 {
 			t.Errorf("Expected value to be 1, got %d", got)
+		}
+	})
+
+	t.Run("get score 0 for non exisiting player", func(t *testing.T) {
+		got := store.GetPlayerScore("NewPlayer")
+
+		if got != 0 {
+			t.Errorf("Expected value to be 1, got %d", got)
+		}
+	})
+}
+
+func TestBoltStoreGetLeague(t *testing.T) {
+	dbPath := "testdb.bolt"
+	bucket := "scoresTest"
+	db := setupBolt(dbPath, bucket)
+	defer tearDownBolt(bucket, db)
+
+	store := BoltPlayerStore{db, "scoresTest"}
+
+	t.Run("get score for all players", func(t *testing.T) {
+		store.RecordWin("TestPlayer")
+		store.RecordWin("TestPlayer2")
+		store.RecordWin("TestPlayer3")
+		got := store.GetLeague()
+
+		want := []Player{
+			{"TestPlayer", 1},
+			{"TestPlayer2", 1},
+			{"TestPlayer3", 1},
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
 		}
 	})
 
