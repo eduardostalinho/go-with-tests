@@ -13,7 +13,7 @@ func TestRecordWinsAndRetrieveScore(t *testing.T) {
 	store := NewBoltPlayerStore(dbPath, bucket)
 	defer store.db.Close()
 	t.Run("record 3 wins and get score", func(t *testing.T) {
-		server := &PlayerServer{store}
+		server := NewPlayerServer(store)
 		player := "Agnawd"
 		wins := 3
 

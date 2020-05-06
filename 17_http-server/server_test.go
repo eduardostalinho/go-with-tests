@@ -26,7 +26,7 @@ func TestGETPlayer(t *testing.T) {
 			"Alice": 10,
 		},
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 	t.Run("return Adam's score", func(t *testing.T) {
 		request := newGetScoreRequest("Adam")
 		response := httptest.NewRecorder()
@@ -69,7 +69,7 @@ func TestPOSTPlayerScoresWins(t *testing.T) {
 			"Alice": 10,
 		},
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("returns accepted", func(t *testing.T) {
 		request := newPostScoreRequest("TestPlayer")
@@ -82,6 +82,29 @@ func TestPOSTPlayerScoresWins(t *testing.T) {
 			t.Errorf("expected RecordWin to be called 1 time., called %d", len(store.winCalls))
 		}
 	})
+}
+
+func TestLeague(t *testing.T) {
+	store := StubPlayerStore{
+		scores: map[string]int{
+			"Adam":  20,
+			"Alice": 10,
+		},
+	}
+	server := NewPlayerServer(&store)
+
+	t.Run("returns 200", func(t *testing.T) {
+		request := newLeagueRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		assertResponseStatus(t, response.Code, http.StatusOK)
+	})
+}
+
+func newLeagueRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	return request
 }
 
 func newPlayerRequest(name, method string) *http.Request {
