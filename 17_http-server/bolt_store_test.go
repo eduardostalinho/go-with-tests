@@ -30,7 +30,7 @@ func TestBoltStoreRecordWin(t *testing.T) {
 	db := setupBolt(dbPath, bucket)
 	defer tearDownBolt(bucket, db)
 
-	store := BoltPlayerStore{*db, bucket}
+	store := BoltPlayerStore{db, bucket}
 
 	t.Run("create new player with score 1", func(t *testing.T) {
 		store.RecordWin("TestPlayer")
@@ -76,7 +76,7 @@ func TestBoltStoreGetPlayerScore(t *testing.T) {
 	db := setupBolt(dbPath, bucket)
 	defer tearDownBolt(bucket, db)
 
-	store := BoltPlayerStore{*db, "scoresTest"}
+	store := BoltPlayerStore{db, "scoresTest"}
 
 	t.Run("get score for exisiting player", func(t *testing.T) {
 		store.RecordWin("TestPlayer")

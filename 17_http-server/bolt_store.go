@@ -6,17 +6,17 @@ import (
 )
 
 type BoltPlayerStore struct {
-	db         bolt.DB
+	db         *bolt.DB
 	bucketName string
 }
 
-func NewBoltPlayerStore (path, bucket string) *BoltPlayerStore {
+func NewBoltPlayerStore(path, bucket string) *BoltPlayerStore {
 	db, _ := bolt.Open(path, 0600, nil)
 	db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(bucket))
 		return err
 	})
-	return &BoltPlayerStore{*db, bucket}
+	return &BoltPlayerStore{db, bucket}
 }
 
 func (s *BoltPlayerStore) RecordWin(name string) {
