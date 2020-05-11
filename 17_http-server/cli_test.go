@@ -21,17 +21,20 @@ func (a *SpyBlindAlerter) ScheduleAlert(duration time.Duration, amount int) {
 }
 
 func TestCLI(t *testing.T) {
-	players := []string{"Adam", "Eve"}
-	for _, p := range players {
-		t.Run(fmt.Sprintf("%s wins", p), func(t *testing.T) {
-			in := strings.NewReader(fmt.Sprintf("%s wins\n", p))
-			store := &poker.StubPlayerStore{}
-			cli := poker.NewCLI(store, in, &SpyBlindAlerter{})
-			cli.PlayPoker()
+	t.Run("records players wins", func(t *testing.T) {
+		players := []string{"Adam", "Eve"}
+		for _, p := range players {
+			t.Run(fmt.Sprintf("%s wins", p), func(t *testing.T) {
+				in := strings.NewReader(fmt.Sprintf("%s wins\n", p))
+				store := &poker.StubPlayerStore{}
+				dummyAlerter := &SpyBlindAlerter{}
+				cli := poker.NewCLI(store, in, dummyAlerter)
+				cli.PlayPoker()
 
-			poker.AssertPlayerWins(t, store, p)
-		})
-	}
+				poker.AssertPlayerWins(t, store, p)
+			})
+		}
+	})
 	t.Run("schedules blind raise alerts", func(t *testing.T) {
 		in := strings.NewReader("R2D2 wins\n")
 		store := &poker.StubPlayerStore{}
