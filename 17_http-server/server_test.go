@@ -149,11 +149,7 @@ func assertResponseStatus(t *testing.T, got, want int) {
 }
 
 func assertLeagueResponse(t *testing.T, body io.Reader, want []Player) {
-	var got []Player
-	err := json.NewDecoder(body).Decode(&got)
-	if err != nil {
-		t.Fatalf("Unable to parse response %s into []Player. %v", body, err)
-	}
+	got, _ := LeagueFromReader(body)
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, wanted %v", got, want)
