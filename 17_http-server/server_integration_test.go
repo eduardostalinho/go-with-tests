@@ -43,7 +43,7 @@ func TestRecordWinsAndRetrieveScore(t *testing.T) {
 			response := httptest.NewRecorder()
 			server.ServeHTTP(response, newGetScoreRequest(player))
 
-			assertResponseBody(t, response.Body.String(), strconv.Itoa(wins))
+			AssertResponseBody(t, response.Body.String(), strconv.Itoa(wins))
 		})
 	}
 }
