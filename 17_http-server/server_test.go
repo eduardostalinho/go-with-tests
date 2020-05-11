@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []Player
+	league   League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(player string) int {
@@ -24,7 +23,7 @@ func (s *StubPlayerStore) RecordWin(player string) {
 	s.winCalls = append(s.winCalls, player)
 }
 
-func (s *StubPlayerStore) GetLeague() []Player {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 func TestGETPlayer(t *testing.T) {
@@ -93,7 +92,7 @@ func TestPOSTPlayerScoresWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	wantedLeague := []Player{
+	wantedLeague := League{
 		{"Adam", 20},
 		{"Alice", 10},
 	}

@@ -111,7 +111,7 @@ func TestBoltStoreGetLeague(t *testing.T) {
 		store.RecordWin("TestPlayer3")
 		got := store.GetLeague()
 
-		want := []Player{
+		want := League{
 			{"TestPlayer", 1},
 			{"TestPlayer2", 1},
 			{"TestPlayer3", 1},

@@ -44,8 +44,8 @@ func (s *BoltPlayerStore) GetPlayerScore(name string) int {
 	return score
 }
 
-func (s *BoltPlayerStore) GetLeague() []Player {
-	leagueTable := []Player{}
+func (s *BoltPlayerStore) GetLeague() League {
+	league := League{}
 	s.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(s.bucketName))
 		c := b.Cursor()
@@ -53,9 +53,9 @@ func (s *BoltPlayerStore) GetLeague() []Player {
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			score, _ := strconv.Atoi(string(v))
 			player := Player{string(k), score}
-			leagueTable = append(leagueTable, player)
+			league = append(league, player)
 		}
 		return nil
 	})
-	return leagueTable
+	return league
 }
