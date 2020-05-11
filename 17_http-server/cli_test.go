@@ -10,25 +10,8 @@ import (
 	"time"
 )
 
-type alert struct {
-	scheduledAt time.Duration
-	amount      int
-}
-
-func (a alert) String() string {
-	return fmt.Sprintf("%d chips at %s", a.amount, a.scheduledAt)
-}
-
-type SpyBlindAlerter struct {
-	alerts []alert
-}
-
-func (a *SpyBlindAlerter) ScheduleAlert(duration time.Duration, amount int) {
-	a.alerts = append(a.alerts, alert{duration, amount})
-}
-
 func TestCLI(t *testing.T) {
-	dummyAlerter := &SpyBlindAlerter{}
+	dummyAlerter := &poker.SpyBlindAlerter{}
 	dummyStore := &poker.StubPlayerStore{}
 	dummyStdout := &bytes.Buffer{}
 
@@ -48,13 +31,13 @@ func TestCLI(t *testing.T) {
 	})
 	t.Run("schedules printing of values", func(t *testing.T) {
 		in := strings.NewReader("5\n")
-		alerter := &SpyBlindAlerter{}
+		alerter := &poker.SpyBlindAlerter{}
 
 		game := poker.NewGame(dummyStore, alerter)
-		cli := poker.NewCLI(game,  in, dummyStdout)
+		cli := poker.NewCLI(game, in, dummyStdout)
 		cli.PlayPoker()
 
-		cases := []alert{
+		cases := []poker.SpyAlert{
 			{0 * time.Second, 100},
 			{10 * time.Minute, 200},
 			{20 * time.Minute, 300},
@@ -68,16 +51,16 @@ func TestCLI(t *testing.T) {
 			{100 * time.Minute, 8000},
 		}
 		for i, c := range cases {
-			if len(alerter.alerts) <= i {
-				t.Fatalf("alert %d was not scheduled %v", i, alerter.alerts)
+			if len(alerter.Alerts) <= i {
+				t.Fatalf("alert %d was not scheduled %v", i, alerter.Alerts)
 			}
-			scheduledAlert := alerter.alerts[i]
+			scheduledAlert := alerter.Alerts[i]
 			assertScheduledAlert(t, c, scheduledAlert)
 		}
 	})
 	t.Run("prompts for input of number of players", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
-		alerter := &SpyBlindAlerter{}
+		alerter := &poker.SpyBlindAlerter{}
 		in := strings.NewReader("7\n")
 
 		game := poker.NewGame(dummyStore, alerter)
@@ -91,24 +74,24 @@ func TestCLI(t *testing.T) {
 			t.Errorf("got stdout %q, want %q", got, want)
 		}
 
-		cases := []alert{
+		cases := []poker.SpyAlert{
 			{0 * time.Second, 100},
 			{12 * time.Minute, 200},
 			{24 * time.Minute, 300},
 			{36 * time.Minute, 400},
 		}
 		for i, c := range cases {
-			if len(alerter.alerts) <= i {
-				t.Fatalf("alert %d was not scheduled %v", i, alerter.alerts)
+			if len(alerter.Alerts) <= i {
+				t.Fatalf("alert %d was not scheduled %v", i, alerter.Alerts)
 			}
-			scheduledAlert := alerter.alerts[i]
+			scheduledAlert := alerter.Alerts[i]
 			assertScheduledAlert(t, c, scheduledAlert)
 		}
 
 	})
 }
 
-func assertScheduledAlert(t *testing.T, alertWanted, scheduledAlert alert) {
+func assertScheduledAlert(t *testing.T, alertWanted, scheduledAlert poker.SpyAlert) {
 	if !reflect.DeepEqual(alertWanted, scheduledAlert) {
 		t.Errorf("expected alert %v got %v", alertWanted, scheduledAlert)
 	}
