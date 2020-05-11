@@ -8,7 +8,11 @@ import (
 	"strings"
 )
 
-const PlayerPrompt = "Please input the number of players: "
+const (
+	PlayerPrompt      = "Please input the number of players: "
+	BadPlayerInputMsg = "Invalid input for number of players, please input a valid number."
+	BadWinMsg         = "Invalid message for win. Please input `{Name} wins`"
+)
 
 type CLI struct {
 	game IGame
@@ -23,11 +27,19 @@ func NewCLI(game IGame, in io.Reader, out io.Writer) *CLI {
 func (c *CLI) PlayPoker() {
 	fmt.Fprint(c.out, PlayerPrompt)
 	numberOfPlayersInput := c.readLine()
-	numberOfPlayers, _ := strconv.Atoi(strings.Trim(numberOfPlayersInput, "\n"))
+	numberOfPlayers, err := strconv.Atoi(strings.Trim(numberOfPlayersInput, "\n"))
+	if err != nil {
+		fmt.Fprintf(c.out, BadPlayerInputMsg)
+		return
+	}
 	c.game.Start(numberOfPlayers)
 
 	winnerInput := c.readLine()
-	winner := extractWinner(winnerInput)
+	winner, err := extractWinner(winnerInput)
+	if err != nil {
+		fmt.Fprintf(c.out, BadWinMsg)
+		return
+	}
 
 	c.game.Finish(winner)
 }
@@ -37,6 +49,10 @@ func (c *CLI) readLine() string {
 	return c.in.Text()
 }
 
-func extractWinner(input string) string {
-	return strings.Replace(input, " wins", "", 1)
+func extractWinner(input string) (string, error) {
+	suffix := " wins"
+	if input[len(input)-len(suffix):] != suffix {
+		return "", fmt.Errorf(BadWinMsg)
+	}
+	return strings.Replace(input, suffix, "", 1), nil
 }
