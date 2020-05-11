@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	bolt "go.etcd.io/bbolt"
@@ -58,4 +58,8 @@ func (s *BoltPlayerStore) GetLeague() League {
 		return nil
 	})
 	return league
+}
+
+func (s *BoltPlayerStore) Close() {
+	s.db.Close()
 }
