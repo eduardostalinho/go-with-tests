@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -40,13 +41,17 @@ func (s *PlayerServer) playerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	leagueTable := s.GetLeagueTable()
+	league := s.GetLeagueTable()
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(leagueTable)
+	json.NewEncoder(w).Encode(league)
 }
 
 func (s *PlayerServer) GetLeagueTable() []Player {
-	return s.store.GetLeague()
+	league := s.store.GetLeague()
+	sort.Slice(league, func(i, j int) bool {
+		return league[i].Wins > league[j].Wins
+	})
+	return league
 
 }
 

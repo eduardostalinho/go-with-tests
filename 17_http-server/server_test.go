@@ -72,8 +72,8 @@ func TestGETPlayer(t *testing.T) {
 func TestPOSTPlayerScoresWins(t *testing.T) {
 	store := StubPlayerStore{
 		scores: map[string]int{
-			"Adam":  20,
-			"Alice": 10,
+			"Alice": 20,
+			"Adam":  33,
 		},
 	}
 	server := NewPlayerServer(&store)
@@ -92,19 +92,23 @@ func TestPOSTPlayerScoresWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	wantedLeague := League{
-		{"Adam", 20},
+	league := League{
 		{"Alice", 10},
+		{"Adam", 20},
 	}
 	store := StubPlayerStore{
-		league: wantedLeague,
+		league: league,
 	}
 	server := NewPlayerServer(&store)
 
-	t.Run("returns 200", func(t *testing.T) {
+	t.Run("returns league sorted with highest scores first", func(t *testing.T) {
 		request := newLeagueRequest()
 		response := httptest.NewRecorder()
 
+		wantedLeague := League{
+			{"Adam", 20},
+			{"Alice", 10},
+		}
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
