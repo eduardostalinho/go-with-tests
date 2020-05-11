@@ -38,7 +38,8 @@ func TestCLI(t *testing.T) {
 			t.Run(fmt.Sprintf("%s wins", p), func(t *testing.T) {
 				in := strings.NewReader(fmt.Sprintf("5\n%s wins\n", p))
 				store := &poker.StubPlayerStore{}
-				cli := poker.NewCLI(store, in, dummyStdout, dummyAlerter)
+				game := poker.NewGame(store, dummyAlerter)
+				cli := poker.NewCLI(game, in, dummyStdout)
 				cli.PlayPoker()
 
 				poker.AssertPlayerWins(t, store, p)
@@ -49,7 +50,8 @@ func TestCLI(t *testing.T) {
 		in := strings.NewReader("5\n")
 		alerter := &SpyBlindAlerter{}
 
-		cli := poker.NewCLI(dummyStore, in, dummyStdout, alerter)
+		game := poker.NewGame(dummyStore, alerter)
+		cli := poker.NewCLI(game,  in, dummyStdout)
 		cli.PlayPoker()
 
 		cases := []alert{
@@ -78,7 +80,8 @@ func TestCLI(t *testing.T) {
 		alerter := &SpyBlindAlerter{}
 		in := strings.NewReader("7\n")
 
-		cli := poker.NewCLI(dummyStore, in, stdout, alerter)
+		game := poker.NewGame(dummyStore, alerter)
+		cli := poker.NewCLI(game, in, stdout)
 		cli.PlayPoker()
 
 		got := stdout.String()
