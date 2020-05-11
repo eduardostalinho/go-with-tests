@@ -8,20 +8,20 @@ import (
 	"strings"
 )
 
-const playerPrompt = "Please input the number of players: "
+const PlayerPrompt = "Please input the number of players: "
 
 type CLI struct {
-	game *Game
+	game IGame
 	in   *bufio.Scanner
 	out  io.Writer
 }
 
-func NewCLI(game *Game, in io.Reader, out io.Writer) *CLI {
+func NewCLI(game IGame, in io.Reader, out io.Writer) *CLI {
 	return &CLI{game, bufio.NewScanner(in), out}
 }
 
 func (c *CLI) PlayPoker() {
-	fmt.Fprint(c.out, playerPrompt)
+	fmt.Fprint(c.out, PlayerPrompt)
 	numberOfPlayersInput := c.readLine()
 	numberOfPlayers, _ := strconv.Atoi(strings.Trim(numberOfPlayersInput, "\n"))
 	c.game.Start(numberOfPlayers)

@@ -9,6 +9,11 @@ type Game struct {
 	alerter BlindAlerter
 }
 
+type IGame interface {
+	Start(numberOfPlayers int)
+	Finish(winner string)
+}
+
 func NewGame(store PlayerStore, alerter BlindAlerter) *Game {
 	return &Game{store, alerter}
 }
