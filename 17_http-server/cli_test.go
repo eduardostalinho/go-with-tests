@@ -1,6 +1,7 @@
 package poker_test
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/eduardostalinho/go-with-tests/17_http-server"
 	"reflect"
@@ -27,14 +28,17 @@ func (a *SpyBlindAlerter) ScheduleAlert(duration time.Duration, amount int) {
 }
 
 func TestCLI(t *testing.T) {
+	dummyAlerter := &SpyBlindAlerter{}
+	dummyStore := &poker.StubPlayerStore{}
+	dummyStdout := &bytes.Buffer{}
+
 	t.Run("records players wins", func(t *testing.T) {
 		players := []string{"Adam", "Eve"}
 		for _, p := range players {
 			t.Run(fmt.Sprintf("%s wins", p), func(t *testing.T) {
-				in := strings.NewReader(fmt.Sprintf("%s wins\n", p))
+				in := strings.NewReader(fmt.Sprintf("5\n%s wins\n", p))
 				store := &poker.StubPlayerStore{}
-				dummyAlerter := &SpyBlindAlerter{}
-				cli := poker.NewCLI(store, in, dummyAlerter)
+				cli := poker.NewCLI(store, in, dummyStdout, dummyAlerter)
 				cli.PlayPoker()
 
 				poker.AssertPlayerWins(t, store, p)
@@ -42,11 +46,10 @@ func TestCLI(t *testing.T) {
 		}
 	})
 	t.Run("schedules printing of values", func(t *testing.T) {
-		in := strings.NewReader("R2D2 wins\n")
-		store := &poker.StubPlayerStore{}
+		in := strings.NewReader("5\n")
 		alerter := &SpyBlindAlerter{}
 
-		cli := poker.NewCLI(store, in, alerter)
+		cli := poker.NewCLI(dummyStore, in, dummyStdout, alerter)
 		cli.PlayPoker()
 
 		cases := []alert{
@@ -69,6 +72,36 @@ func TestCLI(t *testing.T) {
 			scheduledAlert := alerter.alerts[i]
 			assertScheduledAlert(t, c, scheduledAlert)
 		}
+	})
+	t.Run("prompts for input of number of players", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		alerter := &SpyBlindAlerter{}
+		in := strings.NewReader("7\n")
+
+		cli := poker.NewCLI(dummyStore, in, stdout, alerter)
+		cli.PlayPoker()
+
+		got := stdout.String()
+		want := "Please input the number of players: "
+
+		if got != want {
+			t.Errorf("got stdout %q, want %q", got, want)
+		}
+
+		cases := []alert{
+			{0 * time.Second, 100},
+			{12 * time.Minute, 200},
+			{24 * time.Minute, 300},
+			{36 * time.Minute, 400},
+		}
+		for i, c := range cases {
+			if len(alerter.alerts) <= i {
+				t.Fatalf("alert %d was not scheduled %v", i, alerter.alerts)
+			}
+			scheduledAlert := alerter.alerts[i]
+			assertScheduledAlert(t, c, scheduledAlert)
+		}
+
 	})
 }
 

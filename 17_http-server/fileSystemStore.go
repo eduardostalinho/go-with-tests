@@ -35,6 +35,25 @@ func initDBfile(file *os.File) error {
 	return nil
 }
 
+func FileSystemStoreFromFile(path string) (*FileSystemStore, func(), error) {
+	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0600)
+	if err != nil {
+		return nil, nil, fmt.Errorf("unable to open database file %s, %v", path, err)
+	}
+
+	closeFunc := func() {
+		db.Close()
+	}
+
+	store, err := NewFileSystemStore(db)
+
+	if err != nil {
+		return nil, closeFunc, fmt.Errorf("unable to create file system store %v", err)
+	}
+	return store, closeFunc, nil
+
+}
+
 func NewFileSystemStore(file *os.File) (*FileSystemStore, error) {
 	err := initDBfile(file)
 	if err != nil {

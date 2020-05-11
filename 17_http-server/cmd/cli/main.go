@@ -9,20 +9,18 @@ import (
 
 const dbFilename = "game.db.json"
 
+
 func main() {
 	fmt.Println("Let's play poker!")
 	fmt.Println("type `{Name} wins` to record a win")
 
-	db, err := os.OpenFile(dbFilename, os.O_RDWR|os.O_CREATE, 0600)
+	store, close, err := poker.FileSystemStoreFromFile(dbFilename)
 	if err != nil {
-		log.Fatalf("unable to open database file %s, %v", dbFilename, err)
-	}
+		log.Fatal(err)
 
-	store, err := poker.NewFileSystemStore(db)
-
-	if err != nil {
-		log.Fatalf("unable to create file system store %v", err)
 	}
-	cli := poker.NewCLI(store, os.Stdin)
+	defer close()
+
+	cli := poker.NewCLI(store, os.Stdin, poker.BlindAlerterFunc(poker.StdoutAlerter))
 	cli.PlayPoker()
 }
