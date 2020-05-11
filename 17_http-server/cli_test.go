@@ -3,6 +3,7 @@ package poker_test
 import (
 	"fmt"
 	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -66,17 +67,13 @@ func TestCLI(t *testing.T) {
 				t.Fatalf("alert %d was not scheduled %v", i, alerter.alerts)
 			}
 			scheduledAlert := alerter.alerts[i]
-
-			amountGot := scheduledAlert.amount
-			if amountGot != c.amount {
-				t.Errorf("expected amount %d, got %d", c.amount, amountGot)
-			}
-
-			durationGot := scheduledAlert.scheduledAt
-			if durationGot != c.scheduledAt {
-				t.Errorf("expected amount %v, got %v", c.scheduledAt, durationGot)
-			}
-
+			assertScheduledAlert(t, c, scheduledAlert)
 		}
 	})
+}
+
+func assertScheduledAlert(t *testing.T, alertWanted, scheduledAlert alert) {
+	if !reflect.DeepEqual(alertWanted, scheduledAlert) {
+		t.Errorf("expected alert %v got %v", alertWanted, scheduledAlert)
+	}
 }
