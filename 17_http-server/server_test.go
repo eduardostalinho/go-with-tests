@@ -23,7 +23,7 @@ func TestGETPlayer(t *testing.T) {
 
 		want := "20"
 
-		AssertResponseStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response, http.StatusOK)
 		AssertResponseBody(t, response.Body.String(), want)
 	})
 
@@ -35,7 +35,7 @@ func TestGETPlayer(t *testing.T) {
 
 		want := "10"
 
-		AssertResponseStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response, http.StatusOK)
 		AssertResponseBody(t, response.Body.String(), want)
 
 	})
@@ -45,7 +45,7 @@ func TestGETPlayer(t *testing.T) {
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
-		AssertResponseStatus(t, response.Code, http.StatusNotFound)
+		AssertStatus(t, response, http.StatusNotFound)
 
 	})
 }
@@ -64,7 +64,7 @@ func TestPOSTPlayerScoresWins(t *testing.T) {
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
-		AssertResponseStatus(t, response.Code, http.StatusAccepted)
+		AssertStatus(t, response, http.StatusAccepted)
 		AssertResponseBody(t, response.Body.String(), "")
 		AssertPlayerWins(t, store, "TestPlayer")
 	})
@@ -90,13 +90,30 @@ func TestLeague(t *testing.T) {
 		}
 		server.ServeHTTP(response, request)
 
-		AssertResponseStatus(t, response.Code, http.StatusOK)
+		AssertStatus(t, response, http.StatusOK)
 		contentType := response.Result().Header.Get("content-type")
 		if contentType != "application/json" {
 			t.Errorf("Expected content type to be application/json, got %s", contentType)
 		}
 		AssertLeagueResponse(t, response.Body, wantedLeague)
 	})
+}
+
+func TestGame(t *testing.T) {
+	t.Run("returns 200", func(t *testing.T) {
+		server := NewPlayerServer(&StubPlayerStore{})
+		request := newGameRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		AssertStatus(t, response, http.StatusOK)
+	})
+}
+
+func newGameRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/game", nil)
+	return request
 }
 
 func newLeagueRequest() *http.Request {

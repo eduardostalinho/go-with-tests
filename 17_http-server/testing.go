@@ -3,6 +3,7 @@ package poker
 import (
 	"fmt"
 	"io"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 	"time"
@@ -50,8 +51,9 @@ func AssertResponseBody(t *testing.T, got, want string) {
 	}
 }
 
-func AssertResponseStatus(t *testing.T, got, want int) {
+func AssertStatus(t *testing.T, response *httptest.ResponseRecorder, want int) {
 	t.Helper()
+	got := response.Code
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}

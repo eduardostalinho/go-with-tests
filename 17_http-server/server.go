@@ -27,6 +27,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 	router.Handle("/players/", http.HandlerFunc(s.playerHandler))
 	router.Handle("/league", http.HandlerFunc(s.leagueHandler))
+	router.Handle("/game", http.HandlerFunc(s.gameHandler))
 	s.Handler = router
 
 	return s
@@ -46,6 +47,10 @@ func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	league := s.GetLeagueTable()
 	w.Header().Set("content-type", jsonContentType)
 	json.NewEncoder(w).Encode(league)
+}
+
+func (s *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *PlayerServer) GetLeagueTable() []Player {
