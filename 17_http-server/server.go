@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const jsonContentType = "application/json"
+
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
@@ -42,7 +44,7 @@ func (s *PlayerServer) playerHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	league := s.GetLeagueTable()
-	w.Header().Set("content-type", "application/json")
+	w.Header().Set("content-type", jsonContentType)
 	json.NewEncoder(w).Encode(league)
 }
 
