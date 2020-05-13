@@ -3,6 +3,8 @@ package poker
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"html/template"
 	"net/http"
 	"sort"
 	"strings"
@@ -28,6 +30,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	router.Handle("/players/", http.HandlerFunc(s.playerHandler))
 	router.Handle("/league", http.HandlerFunc(s.leagueHandler))
 	router.Handle("/game", http.HandlerFunc(s.gameHandler))
+	router.Handle("/ws", http.HandlerFunc(s.webSocketHandler))
 	s.Handler = router
 
 	return s
@@ -50,7 +53,22 @@ func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	tmpl, err := template.ParseFiles("game.html")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("problema loading template %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
+
+func (s *PlayerServer) webSocketHandler(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+	conn, _ := upgrader.Upgrade(w, r, nil)
+	_, winnerMsg, _ := conn.ReadMessage()
+	s.store.RecordWin(string(winnerMsg))
 }
 
 func (s *PlayerServer) GetLeagueTable() []Player {

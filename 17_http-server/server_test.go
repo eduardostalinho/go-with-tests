@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 func TestGETPlayer(t *testing.T) {
@@ -108,6 +112,25 @@ func TestGame(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		AssertStatus(t, response, http.StatusOK)
+	})
+	t.Run("declares winner of the game on websocket message", func(t *testing.T) {
+		winner := "Abel"
+		store := &StubPlayerStore{}
+		server := httptest.NewServer(NewPlayerServer(store))
+		defer server.Close()
+
+		wsURL := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
+		ws, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		if err != nil {
+			t.Fatalf("Error trying to dial websocket on %s, %v", wsURL, err)
+		}
+		defer ws.Close()
+
+		if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
+			t.Fatalf("Error trying to send message %v", err)
+		}
+		time.Sleep(10 * time.Millisecond)
+		AssertPlayerWins(t, store, winner)
 	})
 }
 
