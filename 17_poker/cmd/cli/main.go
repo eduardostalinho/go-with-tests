@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"github.com/eduardostalinho/go-with-tests/17_poker"
 	"log"
 	"os"
 )

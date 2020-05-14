@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"github.com/eduardostalinho/go-with-tests/17_poker"
 )
 
 func TestTexasHoldEM_Start(t *testing.T) {

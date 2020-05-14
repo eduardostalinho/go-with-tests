@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"github.com/eduardostalinho/go-with-tests/17_poker"
 	"log"
 	"net/http"
 )

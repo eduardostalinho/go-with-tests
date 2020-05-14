@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"github.com/eduardostalinho/go-with-tests/17_poker"
 )
 
 func TestGETPlayer(t *testing.T) {

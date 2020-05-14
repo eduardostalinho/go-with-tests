@@ -7,7 +7,7 @@ import (
 
 	bolt "go.etcd.io/bbolt"
 
-	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"github.com/eduardostalinho/go-with-tests/17_poker"
 )
 
 func setupBolt(path, bucket string) *bolt.DB {

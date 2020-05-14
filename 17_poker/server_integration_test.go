@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/eduardostalinho/go-with-tests/17_http-server"
+	"github.com/eduardostalinho/go-with-tests/17_poker"
 )
 
 func TestRecordWinsAndRetrieveScore(t *testing.T) {
