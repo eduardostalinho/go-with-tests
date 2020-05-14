@@ -2,9 +2,9 @@ package osexec
 
 import (
 	"bytes"
-	"io/ioutil"
-	"io"
 	"encoding/xml"
+	"io"
+	"io/ioutil"
 	"os/exec"
 	"strings"
 )
