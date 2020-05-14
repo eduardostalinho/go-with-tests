@@ -20,7 +20,7 @@ type PlayerServer struct {
 	http.Handler
 	store    PlayerStore
 	template *template.Template
-	game     IGame
+	game     Game
 }
 
 type playerServerWS struct {
@@ -63,7 +63,7 @@ func (w *playerServerWS) WaitForMsg() string {
 
 }
 
-func NewPlayerServer(store PlayerStore, game IGame) (*PlayerServer, error) {
+func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	tmpl, err := template.ParseFiles(htmlTemplatePath)
 
 	if err != nil {

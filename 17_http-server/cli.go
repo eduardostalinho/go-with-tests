@@ -15,12 +15,12 @@ const (
 )
 
 type CLI struct {
-	game IGame
+	game Game
 	in   *bufio.Scanner
 	out  io.Writer
 }
 
-func NewCLI(game IGame, in io.Reader, out io.Writer) *CLI {
+func NewCLI(game Game, in io.Reader, out io.Writer) *CLI {
 	return &CLI{game, bufio.NewScanner(in), out}
 }
 

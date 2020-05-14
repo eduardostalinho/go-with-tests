@@ -9,13 +9,13 @@ import (
 	"github.com/eduardostalinho/go-with-tests/17_http-server"
 )
 
-func TestGame_Start(t *testing.T) {
+func TestTexasHoldEM_Start(t *testing.T) {
 	dummyStore := &poker.StubPlayerStore{}
 	t.Run("starts game for 7 players", func(t *testing.T) {
 		alerter := &poker.SpyBlindAlerter{}
 		numberOfPlayers := 7
 
-		game := poker.NewGame(dummyStore, alerter)
+		game := poker.NewTexasHoldEm(dummyStore, alerter)
 		game.Start(numberOfPlayers, ioutil.Discard)
 
 		cases := []poker.SpyAlert{
@@ -37,7 +37,7 @@ func TestGame_Start(t *testing.T) {
 		numberOfPlayers := 5
 		alerter := &poker.SpyBlindAlerter{}
 
-		game := poker.NewGame(dummyStore, alerter)
+		game := poker.NewTexasHoldEm(dummyStore, alerter)
 		game.Start(numberOfPlayers, ioutil.Discard)
 
 		cases := []poker.SpyAlert{

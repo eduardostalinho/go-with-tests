@@ -5,21 +5,22 @@ import (
 	"time"
 )
 
-type Game struct {
-	store   PlayerStore
-	alerter BlindAlerter
-}
-
-type IGame interface {
+type Game interface {
 	Start(numberOfPlayers int, alertsDestination io.Writer)
 	Finish(winner string)
 }
 
-func NewGame(store PlayerStore, alerter BlindAlerter) *Game {
-	return &Game{store, alerter}
+type TexasHoldEm struct {
+	store   PlayerStore
+	alerter BlindAlerter
 }
 
-func (g *Game) Start(numberOfPlayers int, alertsDestination io.Writer) {
+func NewTexasHoldEm(store PlayerStore, alerter BlindAlerter) *TexasHoldEm {
+	return &TexasHoldEm{store, alerter}
+}
+
+func (g *TexasHoldEm) Start(numberOfPlayers int, alertsDestination io.Writer) {
+
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
 	timeIncrement := time.Duration(5+numberOfPlayers) * time.Minute
@@ -29,6 +30,6 @@ func (g *Game) Start(numberOfPlayers int, alertsDestination io.Writer) {
 	}
 }
 
-func (g *Game) Finish(winner string) {
+func (g *TexasHoldEm) Finish(winner string) {
 	g.store.RecordWin(winner)
 }
