@@ -14,8 +14,8 @@ import (
 )
 
 type SpyGame struct {
-	numberOfPlayers int
-	winner          string
+	NumberOfPlayers int
+	Winner          string
 	StartCalled     bool
 	FinishCalled    bool
 	BlindAlert      []byte
@@ -23,13 +23,13 @@ type SpyGame struct {
 
 func (g *SpyGame) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalled = true
-	g.numberOfPlayers = numberOfPlayers
+	g.NumberOfPlayers = numberOfPlayers
 	out.Write(g.BlindAlert)
 }
 
 func (g *SpyGame) Finish(winner string) {
 	g.FinishCalled = true
-	g.winner = winner
+	g.Winner = winner
 }
 
 type StubPlayerStore struct {
@@ -122,12 +122,12 @@ func AssertMessageSentToUser(t *testing.T, out *bytes.Buffer, messages ...string
 
 func AssertGame(t *testing.T, game *SpyGame, numberOfPlayers int, winner string) {
 	t.Helper()
-	if game.numberOfPlayers != numberOfPlayers {
-		t.Errorf("expected number of players %d, got %d", numberOfPlayers, game.numberOfPlayers)
+	if game.NumberOfPlayers != numberOfPlayers {
+		t.Errorf("expected number of players %d, got %d", numberOfPlayers, game.NumberOfPlayers)
 	}
 
-	if game.winner != winner {
-		t.Errorf("expected winner %s, got %s", winner, game.winner)
+	if game.Winner != winner {
+		t.Errorf("expected winner %s, got %s", winner, game.Winner)
 	}
 }
 

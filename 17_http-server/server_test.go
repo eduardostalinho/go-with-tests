@@ -131,10 +131,10 @@ func TestGame(t *testing.T) {
 		defer ws.Close()
 
 		sendWSMessage(t, ws, "3")
-		sendWSMessage(t, ws, winner)
+		assertStartedCalledWith(t, game, 3)
 
-		time.Sleep(10 * time.Millisecond)
-		poker.AssertGame(t, game, 3, winner)
+		sendWSMessage(t, ws, winner)
+		assertFinishCalledWith(t, game, winner)
 
 		within(t, 10*time.Millisecond, func() {
 			assertWebSocketGetMessage(t, ws, wantBlindAlert)
@@ -169,6 +169,39 @@ func assertWebSocketGetMessage(t *testing.T, ws *websocket.Conn, want string) {
 	if string(msg) != want {
 		t.Errorf("expected message %s, got %s", want, string(msg))
 	}
+}
+
+func assertStartedCalledWith(t *testing.T, game *poker.SpyGame, numberOfPlayers int) {
+	t.Helper()
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.NumberOfPlayers == numberOfPlayers
+	})
+
+	if !passed {
+		t.Errorf("expected numberOfPlayers to be %d got %d", numberOfPlayers, game.NumberOfPlayers)
+	}
+}
+
+func assertFinishCalledWith(t *testing.T, game *poker.SpyGame, winner string) {
+	t.Helper()
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.Winner == winner
+	})
+
+	if !passed {
+		t.Errorf("expected game winner to be %s got %s", winner, game.Winner)
+	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+	return false
+
 }
 
 func newLeagueRequest() *http.Request {
