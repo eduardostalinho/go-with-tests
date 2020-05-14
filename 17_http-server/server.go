@@ -3,18 +3,29 @@ package poker
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
+
+	"github.com/gorilla/websocket"
 )
 
 const jsonContentType = "application/json"
+const htmlTemplatePath = "game.html"
 
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+	template *template.Template
+	game     IGame
+}
+
+type playerServerWS struct {
+	*websocket.Conn
 }
 
 type Player struct {
@@ -22,8 +33,39 @@ type Player struct {
 	Wins int
 }
 
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+var wsUpgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func newPlayerServerWS(w http.ResponseWriter, r *http.Request) *playerServerWS {
+	conn, err := wsUpgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("could not upgrade connection, %v\n", err)
+	}
+
+	return &playerServerWS{conn}
+}
+
+func (w *playerServerWS) WaitForMsg() string {
+	_, msg, err := w.ReadMessage()
+	if err != nil {
+		log.Printf("could not read message from websocket %v\n", err)
+	}
+	return string(msg)
+
+}
+
+func NewPlayerServer(store PlayerStore, game IGame) (*PlayerServer, error) {
+	tmpl, err := template.ParseFiles(htmlTemplatePath)
+
+	if err != nil {
+		return nil, fmt.Errorf("problema loading template %s %v", htmlTemplatePath, err)
+	}
+
 	s := new(PlayerServer)
+	s.game = game
+	s.template = tmpl
 	s.store = store
 	router := http.NewServeMux()
 
@@ -33,7 +75,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	router.Handle("/ws", http.HandlerFunc(s.webSocketHandler))
 	s.Handler = router
 
-	return s
+	return s, nil
 }
 
 func (s *PlayerServer) playerHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,22 +95,18 @@ func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("game.html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("problema loading template %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
-	tmpl.Execute(w, nil)
+	s.template.Execute(w, nil)
 }
 
 func (s *PlayerServer) webSocketHandler(w http.ResponseWriter, r *http.Request) {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-	conn, _ := upgrader.Upgrade(w, r, nil)
-	_, winnerMsg, _ := conn.ReadMessage()
-	s.store.RecordWin(string(winnerMsg))
+	ws := newPlayerServerWS(w, r)
+
+	numberOfPlayersMsg := ws.WaitForMsg()
+	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
+
+	s.game.Start(numberOfPlayers, ioutil.Discard)
+	winner := ws.WaitForMsg()
+	s.game.Finish(winner)
 }
 
 func (s *PlayerServer) GetLeagueTable() []Player {

@@ -32,7 +32,7 @@ func (c *CLI) PlayPoker() {
 		fmt.Fprintf(c.out, BadPlayerInputMsg)
 		return
 	}
-	c.game.Start(numberOfPlayers)
+	c.game.Start(numberOfPlayers, c.out)
 
 	winnerInput := c.readLine()
 	winner, err := extractWinner(winnerInput)
