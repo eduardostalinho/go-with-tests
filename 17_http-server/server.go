@@ -17,8 +17,8 @@ const jsonContentType = "application/json"
 const htmlTemplatePath = "game.html"
 
 type PlayerServer struct {
-	store PlayerStore
 	http.Handler
+	store    PlayerStore
 	template *template.Template
 	game     IGame
 }
