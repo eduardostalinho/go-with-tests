@@ -3,7 +3,7 @@ package osexec
 import "testing"
 
 func TestGetData(t *testing.T) {
-	got := GetData()
+	got := GetData(getXMLFromCommand())
 	want := "HAPPY NEW YEAR!"
 
 	if got != want {

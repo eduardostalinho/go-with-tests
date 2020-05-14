@@ -1,6 +1,9 @@
 package osexec
 
 import (
+	"bytes"
+	"io/ioutil"
+	"io"
 	"encoding/xml"
 	"os/exec"
 	"strings"
@@ -10,17 +13,19 @@ type Payload struct {
 	Message string `xml:"message"`
 }
 
-func GetData() string {
-	cmd := exec.Command("cat", "msg.xml")
-
-	out, _ := cmd.StdoutPipe()
+func GetData(r io.Reader) string {
 	var payload Payload
-	decoder := xml.NewDecoder(out)
+	xml.NewDecoder(r).Decode(&payload)
+	return strings.ToUpper(payload.Message)
+}
 
-	// these 3 can return errors but I'm ignoring for brevity
+func getXMLFromCommand() io.Reader {
+	cmd := exec.Command("cat", "msg.xml")
+	out, _ := cmd.StdoutPipe()
+
 	cmd.Start()
-	decoder.Decode(&payload)
+	data, _ := ioutil.ReadAll(out)
 	cmd.Wait()
 
-	return strings.ToUpper(payload.Message)
+	return bytes.NewReader(data)
 }
