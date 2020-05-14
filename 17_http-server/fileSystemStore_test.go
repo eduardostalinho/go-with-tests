@@ -2,13 +2,12 @@ package poker
 
 import (
 	"io/ioutil"
-	"os"
 	"reflect"
 	"testing"
 )
 
 func TestTape_Write(t *testing.T) {
-	file, clean := createTempFile(t, "123456")
+	file, clean := CreateTempFile(t, "123456")
 	defer clean()
 	tape := &tape{file}
 
@@ -27,13 +26,13 @@ func TestTape_Write(t *testing.T) {
 
 func TestFileSystemStore(t *testing.T) {
 	t.Run("start store with empty file", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, "")
+		database, cleanDatabase := CreateTempFile(t, "")
 		defer cleanDatabase()
 		_, err := NewFileSystemStore(database)
 		AssertNoError(t, err)
 	})
 	t.Run("get league", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
+		database, cleanDatabase := CreateTempFile(t, `[
 			{"Name": "Adam", "Wins": 20},
 			{"Name": "Eve", "Wins": 10}
 		]`)
@@ -59,7 +58,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("get player score", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
+		database, cleanDatabase := CreateTempFile(t, `[
 			{"Name": "Adam", "Wins": 20},
 			{"Name": "Eve", "Wins": 10}
 		]`)
@@ -76,7 +75,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("get player score for non-existent player", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
+		database, cleanDatabase := CreateTempFile(t, `[
 			{"Name": "Adam", "Wins": 20},
 			{"Name": "Eve", "Wins": 10}
 		]`)
@@ -94,7 +93,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("get player score for non-existent player", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
+		database, cleanDatabase := CreateTempFile(t, `[
 			{"Name": "Adam", "Wins": 20},
 			{"Name": "Eve", "Wins": 10}
 		]`)
@@ -111,7 +110,7 @@ func TestFileSystemStore(t *testing.T) {
 		}
 	})
 	t.Run("record win", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
+		database, cleanDatabase := CreateTempFile(t, `[
 			{"Name": "Adam", "Wins": 20},
 			{"Name": "Eve", "Wins": 10}
 		]`)
@@ -128,7 +127,7 @@ func TestFileSystemStore(t *testing.T) {
 		}
 	})
 	t.Run("record win for new player", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
+		database, cleanDatabase := CreateTempFile(t, `[
 			{"Name": "Adam", "Wins": 20},
 			{"Name": "Eve", "Wins": 10}
 		]`)
@@ -145,22 +144,4 @@ func TestFileSystemStore(t *testing.T) {
 			t.Errorf("got %d, want %d", got, want)
 		}
 	})
-}
-
-func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
-	t.Helper()
-
-	tmpfile, err := ioutil.TempFile("", "db")
-	if err != nil {
-		t.Fatalf("could not create temp file. %v", err)
-	}
-
-	tmpfile.Write([]byte(initialData))
-
-	removeFile := func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}
-
-	return tmpfile, removeFile
 }

@@ -6,8 +6,8 @@ import (
 )
 
 type BoltPlayerStore struct {
-	db         *bolt.DB
-	bucketName string
+	DB         *bolt.DB
+	BucketName string
 }
 
 func NewBoltPlayerStore(path, bucket string) *BoltPlayerStore {
@@ -20,9 +20,9 @@ func NewBoltPlayerStore(path, bucket string) *BoltPlayerStore {
 }
 
 func (s *BoltPlayerStore) RecordWin(name string) {
-	s.db.Update(func(tx *bolt.Tx) error {
+	s.DB.Update(func(tx *bolt.Tx) error {
 		playerName := []byte(name)
-		b := tx.Bucket([]byte(s.bucketName))
+		b := tx.Bucket([]byte(s.BucketName))
 		value := b.Get(playerName)
 		intValue, _ := strconv.Atoi(string(value))
 		intValue++
@@ -33,8 +33,8 @@ func (s *BoltPlayerStore) RecordWin(name string) {
 
 func (s *BoltPlayerStore) GetPlayerScore(name string) int {
 	scoreChannel := make(chan int, 1)
-	s.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(s.bucketName))
+	s.DB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(s.BucketName))
 		v := b.Get([]byte(name))
 		score, _ := strconv.Atoi(string(v))
 		scoreChannel <- score
@@ -46,8 +46,8 @@ func (s *BoltPlayerStore) GetPlayerScore(name string) int {
 
 func (s *BoltPlayerStore) GetLeague() League {
 	league := League{}
-	s.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(s.bucketName))
+	s.DB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(s.BucketName))
 		c := b.Cursor()
 
 		for k, v := c.First(); k != nil; k, v = c.Next() {
@@ -61,5 +61,5 @@ func (s *BoltPlayerStore) GetLeague() League {
 }
 
 func (s *BoltPlayerStore) Close() {
-	s.db.Close()
+	s.DB.Close()
 }

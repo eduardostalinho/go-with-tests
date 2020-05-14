@@ -1,6 +1,7 @@
 package poker_test
 
 import (
+	"io/ioutil"
 	"reflect"
 	"testing"
 	"time"
@@ -15,7 +16,7 @@ func TestGame_Start(t *testing.T) {
 		numberOfPlayers := 7
 
 		game := poker.NewGame(dummyStore, alerter)
-		game.Start(numberOfPlayers)
+		game.Start(numberOfPlayers, ioutil.Discard)
 
 		cases := []poker.SpyAlert{
 			{0 * time.Second, 100},
@@ -37,7 +38,7 @@ func TestGame_Start(t *testing.T) {
 		alerter := &poker.SpyBlindAlerter{}
 
 		game := poker.NewGame(dummyStore, alerter)
-		game.Start(numberOfPlayers)
+		game.Start(numberOfPlayers, ioutil.Discard)
 
 		cases := []poker.SpyAlert{
 			{0 * time.Second, 100},

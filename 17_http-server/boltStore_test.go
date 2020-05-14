@@ -1,4 +1,4 @@
-package poker
+package poker_test
 
 import (
 	"reflect"
@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	bolt "go.etcd.io/bbolt"
+
+	"github.com/eduardostalinho/go-with-tests/17_http-server"
 )
 
 func setupBolt(path, bucket string) *bolt.DB {
@@ -31,7 +33,7 @@ func TestBoltStoreRecordWin(t *testing.T) {
 	db := setupBolt(dbPath, bucket)
 	defer tearDownBolt(bucket, db)
 
-	store := BoltPlayerStore{db, bucket}
+	store := poker.BoltPlayerStore{db, bucket}
 
 	t.Run("create new player with score 1", func(t *testing.T) {
 		store.RecordWin("TestPlayer")
@@ -77,7 +79,7 @@ func TestBoltStoreGetPlayerScore(t *testing.T) {
 	db := setupBolt(dbPath, bucket)
 	defer tearDownBolt(bucket, db)
 
-	store := BoltPlayerStore{db, "scoresTest"}
+	store := poker.BoltPlayerStore{db, "scoresTest"}
 
 	t.Run("get score for exisiting player", func(t *testing.T) {
 		store.RecordWin("TestPlayer")
@@ -103,7 +105,7 @@ func TestBoltStoreGetLeague(t *testing.T) {
 	db := setupBolt(dbPath, bucket)
 	defer tearDownBolt(bucket, db)
 
-	store := BoltPlayerStore{db, "scoresTest"}
+	store := poker.BoltPlayerStore{db, "scoresTest"}
 
 	t.Run("get score for all players", func(t *testing.T) {
 		store.RecordWin("TestPlayer")
@@ -111,7 +113,7 @@ func TestBoltStoreGetLeague(t *testing.T) {
 		store.RecordWin("TestPlayer3")
 		got := store.GetLeague()
 
-		want := League{
+		want := poker.League{
 			{"TestPlayer", 1},
 			{"TestPlayer2", 1},
 			{"TestPlayer3", 1},
