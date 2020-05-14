@@ -2,22 +2,22 @@ package poker
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"time"
 )
 
 type BlindAlerter interface {
-	ScheduleAlert(duration time.Duration, amount int)
+	ScheduleAlert(duration time.Duration, amount int, to io.Writer)
 }
 
-type BlindAlerterFunc func(duration time.Duration, amount int)
+type BlindAlerterFunc func(duration time.Duration, amount int, to io.Writer)
 
-func (a BlindAlerterFunc) ScheduleAlert(duration time.Duration, amount int) {
-	a(duration, amount)
+func (a BlindAlerterFunc) ScheduleAlert(duration time.Duration, amount int, to io.Writer) {
+	a(duration, amount, to)
 }
 
-func StdoutAlerter(duration time.Duration, amount int) {
+func Alerter(duration time.Duration, amount int, to io.Writer) {
 	time.AfterFunc(duration, func() {
-		fmt.Fprintf(os.Stdout, "Blind raised to %d\n", amount)
+		fmt.Fprintf(to, "Blind raised to %d\n", amount)
 	})
 }
