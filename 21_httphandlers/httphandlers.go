@@ -1,10 +1,11 @@
 package httphandlers
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
+
 type User struct {
 	Name string
 }

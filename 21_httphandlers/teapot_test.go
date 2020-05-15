@@ -2,10 +2,9 @@ package httphandlers
 
 import (
 	"net/http"
-	"testing"
 	"net/http/httptest"
+	"testing"
 )
-
 
 func TestTeapotHandler(t *testing.T) {
 	res := httptest.NewRecorder()

@@ -2,29 +2,31 @@ package httphandlers
 
 import (
 	"bytes"
-	"io"
 	"encoding/json"
-	"reflect"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
+
 type MockUserService struct {
-	RegisterFunc func(user User) (string, error)
+	RegisterFunc    func(user User) (string, error)
 	UsersRegistered []User
 }
+
 func (s *MockUserService) Register(user User) (string, error) {
 	s.UsersRegistered = append(s.UsersRegistered, user)
 	return s.RegisterFunc(user)
 }
 
 func TestRegisterUser(t *testing.T) {
-	t.Run("register valid user", func (t *testing.T) {
+	t.Run("register valid user", func(t *testing.T) {
 		user := User{Name: "Erickson"}
 		expectedID := "any"
 
 		service := &MockUserService{
-			RegisterFunc: func (user User) (string, error) {
+			RegisterFunc: func(user User) (string, error) {
 				return expectedID, nil
 			},
 		}
