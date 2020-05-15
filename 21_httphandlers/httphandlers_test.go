@@ -46,9 +46,28 @@ func TestRegisterUser(t *testing.T) {
 			t.Errorf("expected to register user %s, users registered: %v", user, service.UsersRegistered)
 		}
 	})
+	t.Run("cannot register invalid data", func(t *testing.T) {
+		data := bytes.NewReader([]byte("blabla"))
+
+		server := NewUserServer(nil)
+
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/", data)
+
+		server.RegisterUser(res, req)
+		assertStatus(t, res, http.StatusBadRequest)
+	})
 }
 
 func userToJSON(user User) io.Reader {
 	data, _ := json.Marshal(user)
 	return bytes.NewReader(data)
+}
+
+func assertStatus(t *testing.T, response *httptest.ResponseRecorder, want int) {
+	t.Helper()
+	got := response.Code
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
 }
