@@ -3,6 +3,7 @@ package httphandlers
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -46,7 +47,7 @@ func TestRegisterUser(t *testing.T) {
 			t.Errorf("expected to register user %s, users registered: %v", user, service.UsersRegistered)
 		}
 	})
-	t.Run("cannot register invalid data", func(t *testing.T) {
+	t.Run("bad request on invalid data", func(t *testing.T) {
 		data := bytes.NewReader([]byte("blabla"))
 
 		server := NewUserServer(nil)
@@ -56,6 +57,23 @@ func TestRegisterUser(t *testing.T) {
 
 		server.RegisterUser(res, req)
 		assertStatus(t, res, http.StatusBadRequest)
+	})
+	t.Run("server error on service error", func(t *testing.T) {
+		user := User{Name: "Erickson"}
+
+		service := &MockUserService{
+			RegisterFunc: func(user User) (string, error) {
+				return "", errors.New("error on service")
+			},
+		}
+		server := NewUserServer(service)
+
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/", userToJSON(user))
+
+		server.RegisterUser(res, req)
+		assertStatus(t, res, http.StatusInternalServerError)
+
 	})
 }
 
